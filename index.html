@@ -308,30 +308,36 @@
         p => String(p.SKU).trim() === sku.trim()
       );
 
-      if(producto){
+let producto = productos.find(
+  p => String(p.SKU).trim() === sku.trim()
+);
 
-        descripcion.innerHTML =
-        producto["Descrip Articulo"];
+if(producto){
 
-        vida.innerHTML =
-        "Vida útil: " +
-        (producto["VIDA UTIL"] || "No registrada");
+  descripcion.innerHTML =
+  producto["Descrip Articulo"];
 
-        descripcion.className = "info";
-        vida.className = "info";
+  let vidaUtil = producto["VIDA UTIL"];
 
-      }else{
+  vida.innerHTML =
+  "Vida útil: " +
+  (vidaUtil ? `${vidaUtil} meses` : "No registrada");
 
-        descripcion.innerHTML =
-        "Producto no encontrado";
+  descripcion.className = "info";
+  vida.className = "info";
 
-        vida.innerHTML =
-        "Vida útil";
+}else{
 
-        descripcion.className = "placeholder";
-        vida.className = "placeholder";
+  descripcion.innerHTML =
+  "Producto no encontrado";
 
-      }
+  vida.innerHTML =
+  "Vida útil";
+
+  descripcion.className = "placeholder";
+  vida.className = "placeholder";
+
+}
 
     }
 
