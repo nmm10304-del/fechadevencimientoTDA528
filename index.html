@@ -21,12 +21,8 @@
       align-items:center;
       height:100vh;
 
-      /* MÁS SEPARACIÓN */
       gap:140px;
-
       margin:0;
-
-      /* MOVER CUADROS */
       padding-left:60px;
       padding-right:60px;
     }
@@ -40,14 +36,13 @@
       text-align:center;
     }
 
-    /* CUADRO PRODUCTO MÁS ANCHO */
-   .box-juliana{
-  transform: translateX(-40px);
-}
-.box-producto{
-  transform: translateX(40px);
-}
+    .box-juliana{
+      transform: translateX(-40px);
+    }
 
+    .box-producto{
+      transform: translateX(40px);
+    }
 
     .logo{
       width:140px;
@@ -88,7 +83,6 @@
       font-size:14px;
     }
 
-    /* BOTÓN BUSCAR */
     .botones{
       display:flex;
       justify-content:center;
@@ -100,7 +94,6 @@
       width:140px;
     }
 
-    /* quitar flechas */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
       -webkit-appearance:none;
@@ -111,7 +104,6 @@
       -moz-appearance:textfield;
     }
 
-    /* TABLA PRODUCTO */
     table{
       width:100%;
       border-collapse:collapse;
@@ -127,12 +119,10 @@
       word-break:break-word;
     }
 
-    /* TEXTO SIN INFO */
     .placeholder{
       color:#777;
     }
 
-    /* TEXTO CON INFO */
     .info{
       color:#333;
       font-weight:normal;
@@ -148,24 +138,17 @@
   <div class="box box-juliana">
 
     <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Promart_logo_2019.svg"
-    alt="Logo Empresa"
     class="logo">
 
     <h2>CONSULTA FECHA JULIANA</h2>
 
-    <input type="number"
-    id="anio"
-    placeholder="Inserte el año"
+    <input type="number" id="anio" placeholder="Inserte el año"
     oninput="this.value=this.value.slice(0,4)">
 
-    <input type="number"
-    id="juliano"
-    placeholder="Inserte los 3 dígitos"
+    <input type="number" id="juliano" placeholder="Inserte los 3 dígitos"
     oninput="this.value=this.value.slice(0,3)">
 
-    <button onclick="convertirFecha()">
-      Convertir
-    </button>
+    <button onclick="convertirFecha()">Convertir</button>
 
     <div id="resultado"></div>
 
@@ -175,24 +158,17 @@
   <div class="box box-producto">
 
     <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Promart_logo_2019.svg"
-    alt="Logo Empresa"
     class="logo">
 
     <h2>DETALLE PRODUCTO</h2>
 
-    <!-- ENTER AUTOMÁTICO -->
     <input type="text"
     id="sku"
     placeholder="Ingrese SKU"
     onkeydown="if(event.key==='Enter'){buscarProducto()}">
 
-    <!-- BOTÓN -->
     <div class="botones">
-
-      <button onclick="buscarProducto()">
-        Buscar
-      </button>
-
+      <button onclick="buscarProducto()">Buscar</button>
     </div>
 
     <table>
@@ -235,27 +211,13 @@
         return;
       }
 
-      anio = anio.replace(/\D/g,'');
-      juliano = juliano.replace(/\D/g,'');
-
-      anio = parseInt(anio);
-      juliano = parseInt(juliano);
-
-      if(isNaN(anio) || isNaN(juliano)){
-        resultado.innerHTML = "Solo se permiten números";
-        return;
-      }
-
-      if(anio < 1000 || anio > 9999){
-        resultado.innerHTML = "Ingrese un año de 4 dígitos";
-        return;
-      }
+      anio = parseInt(anio.replace(/\D/g,''));
+      juliano = parseInt(juliano.replace(/\D/g,''));
 
       let maxDias = esBisiesto(anio) ? 366 : 365;
 
       if(juliano < 1 || juliano > maxDias){
-        resultado.innerHTML =
-        `El día juliano debe estar entre 1 y ${maxDias}`;
+        resultado.innerHTML = `El día juliano debe estar entre 1 y ${maxDias}`;
         return;
       }
 
@@ -263,13 +225,9 @@
       fecha.setDate(juliano);
 
       let dia = fecha.getDate().toString().padStart(2,'0');
+      let mes = (fecha.getMonth() + 1).toString().padStart(2,'0');
 
-      let mes = (fecha.getMonth() + 1)
-      .toString()
-      .padStart(2,'0');
-
-      resultado.innerHTML =
-      `Fecha: ${dia}/${mes}/${anio}`;
+      resultado.innerHTML = `Fecha: ${dia}/${mes}/${anio}`;
     }
 
     /* ========================= */
@@ -281,63 +239,45 @@
     fetch("./data.json")
       .then(response => response.json())
       .then(data => {
-
         productos = data;
-
         console.log("JSON cargado correctamente");
-
       })
       .catch(error => {
-
         console.error("Error cargando JSON:", error);
-
       });
 
     function buscarProducto(){
 
-      let sku =
-      document.getElementById("sku").value.trim();
+      let sku = document.getElementById("sku").value.trim();
 
-      let descripcion =
-      document.getElementById("descripcionResultado");
-
-      let vida =
-      document.getElementById("vidaResultado");
+      let descripcion = document.getElementById("descripcionResultado");
+      let vida = document.getElementById("vidaResultado");
 
       let producto = productos.find(
         p => String(p.SKU).trim() === sku.trim()
       );
 
-let producto = productos.find(
-  p => String(p.SKU).trim() === sku.trim()
-);
+      if(producto){
 
-if(producto){
+        descripcion.innerHTML = producto["Descrip Articulo"];
 
-  descripcion.innerHTML =
-  producto["Descrip Articulo"];
+        let vidaUtil = producto["VIDA UTIL"];
 
-  let vidaUtil = producto["VIDA UTIL"];
+        vida.innerHTML =
+        "Vida útil: " +
+        (vidaUtil ? `${vidaUtil} meses` : "No registrada");
 
-  vida.innerHTML =
-  "Vida útil: " +
-  (vidaUtil ? `${vidaUtil} meses` : "No registrada");
+        descripcion.className = "info";
+        vida.className = "info";
 
-  descripcion.className = "info";
-  vida.className = "info";
+      }else{
 
-}else{
+        descripcion.innerHTML = "Producto no encontrado";
+        vida.innerHTML = "Vida útil";
 
-  descripcion.innerHTML =
-  "Producto no encontrado";
-
-  vida.innerHTML =
-  "Vida útil";
-
-  descripcion.className = "placeholder";
-  vida.className = "placeholder";
-
-}
+        descripcion.className = "placeholder";
+        vida.className = "placeholder";
+      }
 
     }
 
