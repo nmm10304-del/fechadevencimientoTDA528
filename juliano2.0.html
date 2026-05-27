@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fecha de Vencimiento</title>
+
+  <style>
+
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+
+      background-image: url("https://backendproyecta.proyecta.net.pe/storage/projects/1615255868.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+
+      gap:140px;
+      margin:0;
+      padding-left:60px;
+      padding-right:60px;
+    }
+
+    .box{
+      background: rgba(255,255,255,0.92);
+      padding:30px;
+      border-radius:10px;
+      width:340px;
+      box-shadow:0 0 10px rgba(0,0,0,0.2);
+      text-align:center;
+    }
+
+    .box-juliana{
+      transform: translateX(-40px);
+    }
+
+    .box-producto{
+      transform: translateX(40px);
+    }
+
+    .logo{
+      width:140px;
+      display:block;
+      margin:0 auto 15px;
+    }
+
+    h2{
+      color:#ff6a00;
+      font-size:15px;
+      margin-bottom:15px;
+    }
+
+    input, button{
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      border-radius:5px;
+      border:1px solid #ccc;
+      font-size:14px;
+      box-sizing:border-box;
+    }
+
+    button{
+      background:#ff6a00;
+      color:white;
+      border:none;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#e65c00;
+    }
+
+    #resultado{
+      margin-top:15px;
+      font-weight:bold;
+      font-size:14px;
+    }
+
+    .botones{
+      display:flex;
+      justify-content:center;
+      margin-top:10px;
+    }
+
+    .botones button{
+      margin-top:0;
+      width:140px;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance:none;
+      margin:0;
+    }
+
+    input[type=number] {
+      -moz-appearance:textfield;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:15px;
+    }
+
+    td{
+      border:1px solid #ddd;
+      padding:12px;
+      background:white;
+      text-align:left;
+      font-size:14px;
+      word-break:break-word;
+    }
+
+    .placeholder{
+      color:#777;
+    }
+
+    .info{
+      color:#333;
+      font-weight:normal;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- CUADRO JULIANO -->
+  <div class="box box-juliana">
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Promart_logo_2019.svg"
+    class="logo">
+
+    <h2>CONSULTA FECHA JULIANA</h2>
+
+    <input type="number"
+    id="anio"
+    placeholder="Inserte el año"
+    oninput="this.value=this.value.replace(/\D/g,'').slice(0,4)"
+    onkeydown="if(event.key==='Enter'){convertirFecha()}">
+
+    <input type="number"
+    id="juliano"
+    placeholder="Inserte los 3 dígitos"
+    oninput="this.value=this.value.replace(/\D/g,'').slice(0,3)"
+    onkeydown="if(event.key==='Enter'){convertirFecha()}">
+
+    <button onclick="convertirFecha()">Convertir</button>
+
+    <div id="resultado"></div>
+
+  </div>
+
+  <!-- CUADRO PRODUCTO -->
+  <div class="box box-producto">
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Promart_logo_2019.svg"
+    class="logo">
+
+    <h2>DETALLE PRODUCTO</h2>
+
+    <input type="text"
+    id="sku"
+    placeholder="Ingrese SKU"
+    maxlength="20"
+    inputmode="numeric"
+    pattern="[0-9]*"
+    autocomplete="off"
+    oninput="this.value=this.value.replace(/\D/g,'')"
+    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+    onkeydown="if(event.key==='Enter'){buscarProducto()}">
+
+    <div class="botones">
+      <button onclick="buscarProducto()">Buscar</button>
+    </div>
+
+    <table>
+
+      <tr>
+        <td id="descripcionResultado" class="placeholder">
+          Descripción del producto
+        </td>
+      </tr>
+
+      <tr>
+        <td id="vidaResultado" class="placeholder">
+          Vida útil
+        </td>
+      </tr>
+
+    </table>
+
+  </div>
+
+  <script>
+
+    /* ========================= */
+    /* FECHA JULIANA */
+    /* ========================= */
+
+    function esBisiesto(anio) {
+      return (anio % 4 === 0 && anio % 100 !== 0)
+      || (anio % 400 === 0);
+    }
+
+    function convertirFecha(){
+
+      let anio = document.getElementById("anio").value;
+      let juliano = document.getElementById("juliano").value;
+      let resultado = document.getElementById("resultado");
+
+      if(anio === "" || juliano === ""){
+        resultado.innerHTML = "Completa los campos";
+        return;
+      }
+
+      anio = parseInt(anio.replace(/\D/g,''));
+      juliano = parseInt(juliano.replace(/\D/g,''));
+
+      let maxDias = esBisiesto(anio) ? 366 : 365;
+
+      if(juliano < 1 || juliano > maxDias){
+        resultado.innerHTML = `El día juliano debe estar entre 1 y ${maxDias}`;
+        return;
+      }
+
+      let fecha = new Date(anio, 0);
+      fecha.setDate(juliano);
+
+      let dia = fecha.getDate().toString().padStart(2,'0');
+      let mes = (fecha.getMonth() + 1).toString().padStart(2,'0');
+
+      resultado.innerHTML = `Fecha: ${dia}/${mes}/${anio}`;
+    }
+
+    /* ========================= */
+    /* PRODUCTOS JSON */
+    /* ========================= */
+
+    let productos = [];
+
+    fetch("./data.json")
+      .then(response => response.json())
+      .then(data => {
+        productos = data;
+        console.log("JSON cargado correctamente");
+      })
+      .catch(error => {
+        console.error("Error cargando JSON:", error);
+      });
+
+    function buscarProducto(){
+
+      let sku = document.getElementById("sku").value.trim();
+
+      let descripcion = document.getElementById("descripcionResultado");
+      let vida = document.getElementById("vidaResultado");
+
+      if(sku === ""){
+        descripcion.innerHTML = "Ingrese un SKU";
+        vida.innerHTML = "Vida útil";
+
+        descripcion.className = "placeholder";
+        vida.className = "placeholder";
+        return;
+      }
+
+      let producto = productos.find(
+        p => String(p.SKU).trim() === sku.trim()
+      );
+
+      if(producto){
+
+        descripcion.innerHTML = producto["Descrip Articulo"];
+
+        let vidaUtil = producto["VIDA UTIL"];
+
+        vida.innerHTML =
+        "Vida útil: " +
+        (vidaUtil ? `${vidaUtil} meses` : "No registrada");
+
+        descripcion.className = "info";
+        vida.className = "info";
+
+      }else{
+
+        descripcion.innerHTML = "Producto no encontrado";
+        vida.innerHTML = "Vida útil";
+
+        descripcion.className = "placeholder";
+        vida.className = "placeholder";
+      }
+
+    }
+
+  </script>
+
+</body>
+
+</html>
